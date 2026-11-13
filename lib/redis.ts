@@ -27,6 +27,8 @@ export const authLimit = () => limiter("auth", 60, "1 m");
 // Progress API: generous for play, tight enough to stop abuse.
 export const progressReadLimit = () => limiter("progress-read", 60, "1 m");
 export const progressWriteLimit = () => limiter("progress-write", 30, "1 m");
+// CSP reports: a browser may send a burst on one page load; anything beyond this is noise or abuse.
+export const cspReportLimit = () => limiter("csp", 20, "1 m");
 
 // SECURITY TODO: x-forwarded-for is trustworthy here only because Vercel sets it.
 // If this app moves to another host, read the client IP from that host's trusted header.

@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { env, ownerEmail } from "./env";
 import { redis } from "./redis";
+import { bump } from "./stats";
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 const verKey = (email: string) => `fq:sessver:${email}`;
@@ -33,7 +34,9 @@ export function buildAuthOptions(): NextAuthOptions {
       if (account?.provider !== "google") return false;
       const p = profile as { email?: string; email_verified?: boolean } | undefined;
       const email = p?.email?.toLowerCase();
-      return p?.email_verified === true && !!email && email === ownerEmail();
+      const ok = p?.email_verified === true && !!email && email === ownerEmail();
+      if (!ok) await bump("signin_denied");
+      return ok;
     },
     async jwt({ token, user }) {
       if (user?.email) {

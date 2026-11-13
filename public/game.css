@@ -166,3 +166,8 @@ dl.terms dd { margin: 2px 0 0 0; }
 .verdictRow { display: flex; gap: 10px; align-items: center; text-align: left; margin-top: 8px; }
 #cisoPortrait { width: 64px; height: 64px; border: 2px solid var(--edge); border-radius: 4px; flex: none; }
 #authBtn { margin-top: 14px; }
+#secStats h3 { font-family: var(--display); font-size: 10px; line-height: 1.6; color: var(--accent); margin: 0 0 6px; }
+#secStats table { width: 100%; border-collapse: collapse; font-size: 0.85em; font-variant-numeric: tabular-nums; }
+#secStats th, #secStats td { text-align: left; padding: 3px 0; border-bottom: 1px solid var(--line); }
+#secStats td.n, #secStats th.n { text-align: right; padding-left: 10px; }
+#secStats td.hot { color: var(--bad); }

@@ -952,6 +952,48 @@ function openCodex() {
 }
 $("#codexClose").addEventListener("click", () => closeOv("codexOv"));
 
+/* Owner-only security activity: counts from the server, rendered as text. */
+const STAT_LABELS = [
+  ["signin_denied", "Refused sign-ins"],
+  ["auth_rate_limited", "Sign-in rate limits hit"],
+  ["origin_blocked", "Cross-site saves blocked"],
+  ["progress_unauthorized", "Unauthorized save attempts"],
+  ["progress_rate_limited", "Save rate limits hit"],
+  ["csp_violation", "Blocked scripts or styles (CSP)"]
+];
+async function renderSecStats() {
+  const box = $("#secStats");
+  box.hidden = true; box.textContent = "";
+  if (session.mode !== "owner") return;
+  try {
+    const res = await api("/api/stats");
+    if (!res.ok) throw new Error("stats " + res.status);
+    const j = await res.json();
+    const days = Array.isArray(j && j.days) ? j.days : [];
+    const num = v => (Number.isInteger(v) && v >= 0 ? v : 0);
+    box.appendChild(el("h3", null, "SECURITY ACTIVITY"));
+    const t = el("table");
+    const head = el("tr"); head.appendChild(el("th", null, "Event")); head.appendChild(el("th", { class: "n" }, "Today")); head.appendChild(el("th", { class: "n" }, "14 days"));
+    t.appendChild(head);
+    for (const [key, label] of STAT_LABELS) {
+      const today = num(days[0] && days[0].counts && days[0].counts[key]);
+      const total = days.reduce((a, d) => a + num(d && d.counts && d.counts[key]), 0);
+      const tr = el("tr");
+      tr.appendChild(el("td", null, label));
+      tr.appendChild(el("td", { class: "n" + (today > 0 && key === "signin_denied" ? " hot" : "") }, String(today)));
+      tr.appendChild(el("td", { class: "n" }, String(total)));
+      t.appendChild(tr);
+    }
+    box.appendChild(t);
+    box.appendChild(el("p", { class: "small" }, "Counts only. During a flood of requests, counts are capped, so they show that something happened rather than exactly how much."));
+    box.hidden = false;
+  } catch (e) {
+    console.error("stats failed", e);
+    box.appendChild(el("p", { class: "small" }, "Security activity isn't available right now."));
+    box.hidden = false;
+  }
+}
+
 function openSettings() {
   $("#setSpeed").value = state.settings.speed;
   $("#setSound").checked = state.settings.sound;
@@ -962,6 +1004,7 @@ function openSettings() {
     ? "Signed in as the owner. Progress saves to your account."
     : session.mode === "guest" ? "Guest run. Nothing is saved." : "Progress isn't being saved on this visit.";
   $("#setReset").hidden = session.mode !== "owner";
+  renderSecStats();
   $("#setSignOut").hidden = !session.signedIn;
   openOv("settingsOv");
 }

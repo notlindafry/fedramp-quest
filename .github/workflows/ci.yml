@@ -1,0 +1,22 @@
+# Build check for every pull request (including Dependabot's), so an update
+# that breaks the build is visible before you merge it.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npx tsc --noEmit
+      - run: npx next build

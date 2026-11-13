@@ -39,6 +39,13 @@ A 16-bit RPG for learning FedRAMP (Rev 5, VDR, VER and 20x). Each module is a sh
 - `# SECURITY TODO:` the rate limiter keys on `x-forwarded-for`, which Vercel sets. If this app ever moves off Vercel, revisit how the client IP is read.
 - There's no CAPTCHA on sign-in. That's acceptable because only one Google account can get through, and Google runs its own abuse checks on its sign-in page.
 
+## Monitoring and updates
+
+- **Security activity panel:** the owner sees daily counts of refused sign-ins, rate-limit hits, blocked cross-site saves and CSP violations under Settings. Only counts are stored (no IPs, emails or request bodies), kept 35 days. Counter writes are capped per server instance so floods can't run up Redis usage.
+- **CSP reports** go to `/api/csp-report`, which is rate limited and only increments a counter.
+- **Dependabot** opens weekly grouped PRs for npm patch and minor updates and monthly ones for GitHub Actions. The `ci` workflow builds every PR, and also runs `npm audit` (fails on high) and a type check.
+- **Deploys:** `main` deploys directly by choice. The trade-off is that anyone holding a GitHub token with push access can ship to production, so GitHub MFA is the control.
+
 ## Content accuracy
 
 Primer and scenario content was checked against fedramp.gov on 2026-11-13. FedRAMP rules change through its public process; recap cards show the check date.
