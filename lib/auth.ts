@@ -5,13 +5,21 @@ import { redis } from "./redis";
 import { bump } from "./stats";
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
-const verKey = (email: string) => `fq:sessver:${email}`;
+const epochKey = (email: string) => `fq:sessepoch:${email}`;
 
-// Session version: bumped on sign-out so every token issued before it stops working,
-// even though sessions are stateless JWTs.
-export async function currentSessionVersion(email: string): Promise<number> {
-  const v = await redis().get<number>(verKey(email));
-  return typeof v === "number" ? v : 0;
+// Session epoch: a random value stored in Redis and copied into each token at sign-in.
+// Sign-out writes a new epoch, so every token issued before it stops working, even
+// though sessions are stateless JWTs. If the key is ever missing (database replaced,
+// data lost), a fresh random epoch is created, which invalidates all existing tokens
+// instead of silently reviving ones that had been signed out.
+export async function currentSessionEpoch(email: string): Promise<string> {
+  const key = epochKey(email);
+  const existing = await redis().get<string>(key);
+  if (typeof existing === "string" && existing.length >= 16) return existing;
+  await redis().set(key, crypto.randomUUID(), { nx: true });
+  const now = await redis().get<string>(key);
+  if (typeof now !== "string") throw new Error("session epoch unavailable");
+  return now;
 }
 
 // Built on first request, not at import, so a build without secrets still succeeds
@@ -43,7 +51,7 @@ export function buildAuthOptions(): NextAuthOptions {
         const email = user.email.toLowerCase();
         token.email = email;
         token.role = email === ownerEmail() ? "owner" : "none";
-        token.ver = await currentSessionVersion(email);
+        token.ver = await currentSessionEpoch(email);
       }
       return token;
     },
@@ -61,7 +69,7 @@ export function buildAuthOptions(): NextAuthOptions {
   events: {
     async signOut({ token }) {
       const email = typeof token?.email === "string" ? token.email : null;
-      if (email) await redis().incr(verKey(email));
+      if (email) await redis().set(epochKey(email), crypto.randomUUID());
     },
   },
   };

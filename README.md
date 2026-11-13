@@ -12,7 +12,7 @@ A 16-bit RPG for learning FedRAMP (Rev 5, VDR, VER and 20x). Each module is a sh
 | `public/index.html`, `game.css`, `game.js` | The game. Static files, no inline scripts or styles, so the CSP can be strict. |
 | `app/api/auth/[...nextauth]` | Google sign-in (NextAuth v4). Only the owner's verified Google email is allowed. Rate limited by IP. |
 | `app/api/progress` | Get, save and delete the owner's progress. Every call re-checks the session server-side, validates the body with zod, and is rate limited. |
-| `lib/auth.ts` | Session rules. 7-day JWT sessions; signing out bumps a version in Redis so old tokens stop working. |
+| `lib/auth.ts` | Session rules. 7-day JWT sessions; signing out writes a new random session epoch in Redis so old tokens stop working, and if the epoch is ever lost (for example, the database is replaced) a new one is created, which forces a fresh sign-in. |
 | `next.config.mjs` | Security headers: CSP, HSTS, nosniff, frame-deny, referrer and permissions policies. |
 
 ## Deploy on Vercel
