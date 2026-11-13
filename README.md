@@ -17,7 +17,7 @@ A 16-bit RPG for learning FedRAMP (Rev 5, VDR, VER and 20x). Each module is a sh
 
 ## Deploy on Vercel
 
-1. **Upstash Redis.** In Vercel, open the project's Storage tab (or the Marketplace) and add Upstash Redis. It fills in `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. If you create the database at console.upstash.com instead, copy those two values yourself.
+1. **Upstash Redis.** In Vercel, open the project's Storage tab (or the Marketplace) and add Upstash Redis. Connect it to this project. It adds the connection settings automatically, named either `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` or `KV_REST_API_URL`/`KV_REST_API_TOKEN`; the app accepts both. If you create the database at console.upstash.com instead, copy those two values yourself.
 2. **Google sign-in.** In Google Cloud Console, go to APIs & Services, then Credentials, and create an OAuth client ID of type "Web application".
    - Authorized JavaScript origin: `https://<your-domain>`
    - Authorized redirect URI: `https://<your-domain>/api/auth/callback/google`

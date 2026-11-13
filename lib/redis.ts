@@ -1,10 +1,13 @@
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
-import { env } from "./env";
+import { envAny } from "./env";
 
 let client: Redis | null = null;
 export function redis(): Redis {
-  if (!client) client = new Redis({ url: env("UPSTASH_REDIS_REST_URL"), token: env("UPSTASH_REDIS_REST_TOKEN") });
+  if (!client) client = new Redis({
+    url: envAny("UPSTASH_REDIS_REST_URL", "KV_REST_API_URL"),
+    token: envAny("UPSTASH_REDIS_REST_TOKEN", "KV_REST_API_TOKEN"),
+  });
   return client;
 }
 
