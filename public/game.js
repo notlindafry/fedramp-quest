@@ -132,7 +132,74 @@ function drawOffice(ctx) {
   ctx.fillStyle = "#f7d046"; ctx.fillRect(96, 16, 6, 6); ctx.fillRect(104, 20, 6, 6); ctx.fillStyle = "#ef8fb0"; ctx.fillRect(100, 26, 6, 6);
 }
 
-const SCENES = { tower: drawTower, office: drawOffice };
+function drawMine(ctx) {
+  ctx.fillStyle = "#1a1410"; ctx.fillRect(0, 0, 192, 108);
+  for (let y = 0; y < 108; y += 2) for (let x = 0; x < 192; x += 2) {
+    const n = noise(x, y);
+    if (n > 0.55) { ctx.fillStyle = n > 0.85 ? "#4a3a2c" : "#2e241c"; ctx.fillRect(x, y, 2, 2); }
+  }
+  // tunnel mouth
+  ctx.fillStyle = "#07060a"; ctx.fillRect(72, 30, 48, 60); ctx.fillRect(78, 24, 36, 6);
+  // timber supports
+  ctx.fillStyle = "#7a5230"; ctx.fillRect(66, 24, 6, 70); ctx.fillRect(120, 24, 6, 70); ctx.fillRect(64, 20, 64, 6);
+  ctx.fillStyle = "#5a3a20"; for (let y = 28; y < 94; y += 8) { ctx.fillRect(66, y, 6, 1); ctx.fillRect(120, y, 6, 1); }
+  // rails
+  ctx.fillStyle = "#6a6070"; ctx.fillRect(84, 90, 2, 18); ctx.fillRect(106, 90, 2, 18);
+  ctx.fillStyle = "#5a3a20"; for (let y = 92; y < 108; y += 4) ctx.fillRect(80, y, 32, 2);
+  // cart full of paperwork
+  ctx.fillStyle = "#5d5f74"; ctx.fillRect(140, 78, 30, 14); ctx.fillStyle = "#3a3c4c"; ctx.fillRect(140, 90, 30, 2);
+  ctx.fillStyle = "#141428"; ctx.fillRect(144, 92, 6, 6); ctx.fillRect(160, 92, 6, 6);
+  ctx.fillStyle = "#e6e4db"; ctx.fillRect(142, 72, 8, 6); ctx.fillRect(150, 70, 8, 8); ctx.fillRect(159, 73, 8, 5);
+  // lantern
+  ctx.fillStyle = "#f7d046"; ctx.fillRect(40, 40, 6, 8); ctx.fillStyle = "rgba(247,208,70,0.10)"; ctx.fillRect(24, 26, 38, 40);
+  ctx.fillStyle = "#3a3c4c"; ctx.fillRect(42, 36, 2, 4);
+}
+
+function drawOracle(ctx) {
+  ctx.fillStyle = "#1a1030"; ctx.fillRect(0, 0, 192, 108);
+  for (let y = 0; y < 72; y++) for (let x = 0; x < 192; x++) if (noise(x + 3, y + 7) > 0.994) { ctx.fillStyle = "#c9b8f0"; ctx.fillRect(x, y, 1, 1); }
+  // arches
+  ctx.fillStyle = "#2e1f52";
+  for (let i = 0; i < 4; i++) { const x = 8 + i * 48; ctx.fillRect(x, 10, 8, 70); ctx.fillRect(x + 36, 10, 8, 70); ctx.fillRect(x, 6, 44, 6); }
+  // floor
+  ctx.fillStyle = "#24183e"; ctx.fillRect(0, 80, 192, 28);
+  for (let x = 0; x < 192; x += 16) { ctx.fillStyle = "#2e1f52"; ctx.fillRect(x, 80, 1, 28); }
+  // pedestal and crystal ball
+  ctx.fillStyle = "#6a4aa8"; ctx.fillRect(86, 70, 20, 14); ctx.fillRect(82, 82, 28, 4);
+  ctx.fillStyle = "#9a7ad8"; ctx.fillRect(84, 46, 24, 24); ctx.fillRect(88, 42, 16, 4); ctx.fillRect(88, 70, 16, 2);
+  ctx.fillStyle = "#c9b8f0"; ctx.fillRect(90, 48, 6, 6);
+  ctx.fillStyle = "#f4ecc0"; ctx.fillRect(96, 56, 2, 2); ctx.fillRect(100, 52, 1, 1);
+  // glow
+  ctx.fillStyle = "rgba(201,184,240,0.10)"; ctx.fillRect(70, 34, 52, 48);
+  // scale of judgement
+  ctx.fillStyle = "#c9a86b"; ctx.fillRect(150, 50, 2, 30); ctx.fillRect(136, 50, 30, 2); ctx.fillRect(136, 52, 2, 8); ctx.fillRect(164, 52, 2, 4);
+  ctx.fillRect(132, 60, 10, 2); ctx.fillRect(160, 56, 10, 2); ctx.fillRect(144, 80, 14, 2);
+}
+
+function drawCrossroads(ctx) {
+  const bands = ["#f2a65a", "#e98a5a", "#c76b6b", "#8a5a8a"];
+  bands.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(0, i * 12, 192, 12); });
+  ctx.fillStyle = "#5a4a7a"; ctx.fillRect(0, 48, 192, 10);
+  // hills
+  ctx.fillStyle = "#3a6a44"; for (let x = 0; x < 192; x++) { const h = 6 + Math.round(Math.sin(x / 14) * 4); ctx.fillRect(x, 58 - h, 1, h); }
+  ctx.fillStyle = "#3a7d44"; ctx.fillRect(0, 58, 192, 50);
+  for (let y = 58; y < 108; y += 2) for (let x = 0; x < 192; x += 2) if (noise(x, y) > 0.9) { ctx.fillStyle = "#4f9a52"; ctx.fillRect(x, y, 2, 2); }
+  // paved road (left) and road under construction (right)
+  for (let y = 58; y < 108; y++) {
+    const t = (y - 58) / 50, w = 4 + Math.round(t * 30);
+    ctx.fillStyle = "#7a7a8a"; ctx.fillRect(Math.round(96 - t * 70) - w / 2, y, w, 1);
+    ctx.fillStyle = "#b08a5a"; ctx.fillRect(Math.round(96 + t * 70) - w / 2, y, w, 1);
+  }
+  ctx.fillStyle = "#e6e4db"; for (let y = 62; y < 108; y += 6) { const t = (y - 58) / 50; ctx.fillRect(Math.round(96 - t * 70), y, 1, 3); }
+  // cones on the new road
+  ctx.fillStyle = "#ef7a2a"; ctx.fillRect(140, 88, 4, 6); ctx.fillRect(152, 96, 4, 6); ctx.fillStyle = "#e6e4db"; ctx.fillRect(140, 90, 4, 1); ctx.fillRect(152, 98, 4, 1);
+  // signpost
+  ctx.fillStyle = "#7a5a3a"; ctx.fillRect(95, 34, 3, 30);
+  ctx.fillStyle = "#c9a86b"; ctx.fillRect(76, 36, 20, 6); ctx.fillRect(97, 44, 20, 6);
+  ctx.fillStyle = "#3a2a1a"; ctx.fillRect(79, 38, 12, 1); ctx.fillRect(80, 40, 8, 1); ctx.fillRect(100, 46, 12, 1); ctx.fillRect(101, 48, 8, 1);
+}
+
+const SCENES = { tower: drawTower, office: drawOffice, mine: drawMine, oracle: drawOracle, crossroads: drawCrossroads };
 function drawScene(name) {
   const ctx = $("#sceneCanvas").getContext("2d");
   (SCENES[name] || drawOffice)(ctx);
@@ -376,7 +443,7 @@ const VDR = {
     ]
   }
 };
-const MODULES = { vdr: VDR };
+const MODULES = Object.assign({ vdr: VDR }, window.FQ_MODULES || {});
 const NAMES = { dot: "DOT", player: null, raj: "RAJ", chad: "CHAD", pam: "PAM (3PAO)", ciso: "THE CISO", ao: "AGENCY AO" };
 const RANKS = [[0, "New Hire"], [60, "Control Wrangler"], [150, "ConMon Survivor"], [300, "Package Whisperer"], [500, "Boundary Keeper"], [700, "FedRAMP Sage"]];
 
