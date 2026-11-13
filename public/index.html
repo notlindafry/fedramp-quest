@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FedRAMP Quest</title>
+<meta name="description" content="A 16-bit RPG for learning FedRAMP: Rev 5, VDR, VER and 20x.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/game.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Title -->
+  <section id="title" class="screen on" aria-labelledby="titleH">
+    <canvas id="titleArt" class="px" width="192" height="108" aria-hidden="true"></canvas>
+    <h1 id="titleH">FEDRAMP<br>QUEST</h1>
+    <div class="sub">A GRC EXEC'S FIRST 90 DAYS</div>
+    <div id="titleMenu" class="panel" role="menu"><button class="btn" disabled>Loading...</button></div>
+    <div id="titleNote" class="small"></div>
+  </section>
+
+  <!-- Name entry -->
+  <section id="nameScreen" class="screen" aria-labelledby="nameH">
+    <div class="panel">
+      <h2 id="nameH" class="display nameH">YOUR NAME?</h2>
+      <p class="m0">You start Monday as head of GRC at Halcyon Cloud. What does your badge say?</p>
+      <form id="nameForm" novalidate>
+        <label for="nameInput" class="small">Up to 16 letters, numbers, spaces, periods, apostrophes or hyphens</label>
+        <input id="nameInput" maxlength="16" autocomplete="off" spellcheck="false" required>
+        <div id="nameError" role="alert"></div>
+        <div class="row"><button type="submit">START</button><button type="button" id="nameBack">BACK</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Overworld -->
+  <section id="overworld" class="screen" aria-label="Map of Halcyon">
+    <div class="hud"><span class="t" id="mapHud">HALCYON</span><button id="mapMenuBtn" type="button">MENU</button></div>
+    <div id="map">
+      <canvas id="mapCanvas" class="px" width="180" height="260" aria-hidden="true"></canvas>
+      <div id="locs"></div>
+    </div>
+    <div id="banner"></div>
+  </section>
+
+  <!-- Scene -->
+  <section id="scene" class="screen" aria-label="Module">
+    <div class="hud"><span class="t" id="sceneHud"></span><button id="sceneMenuBtn" type="button">MENU</button></div>
+    <div id="sceneWrap"><canvas id="sceneCanvas" class="px" width="192" height="108" aria-hidden="true"></canvas><div id="flash"></div></div>
+    <div id="pips" aria-hidden="true"></div>
+    <div id="choices" role="group" aria-label="Choices"><div class="panel" id="choiceList"></div></div>
+    <div id="dialog" class="panel" role="button" tabindex="0" aria-label="Dialog. Tap or press Enter to continue.">
+      <canvas id="portrait" class="px" width="16" height="16" aria-hidden="true"></canvas>
+      <div id="speech"><div id="speaker"></div><div id="text" aria-live="polite"></div></div>
+      <div id="more" aria-hidden="true">&#9660;</div>
+    </div>
+    <div id="navRow"><button id="backBtn" type="button" hidden>&#9664; BACK</button><span></span></div>
+  </section>
+
+  <!-- Overlays -->
+  <div id="recapOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="recapH">
+    <div class="panel">
+      <h2 id="recapH"></h2>
+      <div id="recapBody"></div>
+      <p class="small" id="recapChecked"></p>
+      <div class="row"><button id="recapExport" type="button">EXPORT</button><button id="recapClose" type="button">CONTINUE</button></div>
+    </div>
+  </div>
+
+  <div id="clearOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="clearH">
+    <div class="panel center">
+      <h2 id="clearH">CHAPTER CLEAR</h2>
+      <div class="stars" id="clearStars" aria-label=""></div>
+      <p id="clearStats"></p>
+      <div class="verdictRow">
+        <canvas id="cisoPortrait" class="px" width="16" height="16" aria-hidden="true"></canvas>
+        <p id="clearVerdict" class="m0"></p>
+      </div>
+      <div class="row rowCenter"><button id="clearReplay" type="button">REPLAY</button><button id="clearMap" type="button">BACK TO MAP</button></div>
+    </div>
+  </div>
+
+  <div id="menuOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="menuH">
+    <div class="panel">
+      <h2 id="menuH">MENU</h2>
+      <div id="menuList"></div>
+    </div>
+  </div>
+
+  <div id="codexOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="codexH">
+    <div class="panel">
+      <h2 id="codexH">CODEX</h2>
+      <p class="small m0">Recap cards you've unlocked. Open one to review or export it.</p>
+      <div id="codexList"></div>
+      <div class="row"><button id="codexClose" type="button">CLOSE</button></div>
+    </div>
+  </div>
+
+  <div id="settingsOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="setH">
+    <div class="panel">
+      <h2 id="setH">SETTINGS</h2>
+      <div class="setting"><label for="setSpeed">Text speed</label><select id="setSpeed"><option value="normal">Normal</option><option value="fast">Fast</option><option value="instant">Instant</option></select></div>
+      <div class="setting"><label for="setSound">Sound effects</label><input type="checkbox" id="setSound"></div>
+      <div class="setting"><label for="setBig">Larger text</label><input type="checkbox" id="setBig"></div>
+      <div class="setting"><label for="setCalm">Reduce motion</label><input type="checkbox" id="setCalm"></div>
+      <div id="accountInfo" class="small mt12"></div>
+      <div class="row"><button id="setSignOut" type="button">SIGN OUT</button><button id="setReset" type="button">RESET PROGRESS</button><button id="setClose" type="button">CLOSE</button></div>
+    </div>
+  </div>
+
+  <div id="confirmOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="confirmH">
+    <div class="panel">
+      <h2 id="confirmH">ARE YOU SURE?</h2>
+      <p id="confirmText"></p>
+      <div class="row"><button id="confirmYes" type="button">YES</button><button id="confirmNo" type="button">NO</button></div>
+    </div>
+  </div>
+
+  <div id="exportOv" class="overlay" role="dialog" aria-modal="true" aria-labelledby="exportH">
+    <div class="panel">
+      <h2 id="exportH">EXPORT</h2>
+      <p class="small mt0" id="exportNote"></p>
+      <label for="exportText" class="small">Markdown recap</label>
+      <textarea id="exportText" readonly></textarea>
+      <div class="row"><button id="exportCopy" type="button">COPY</button><button id="exportClose" type="button">CLOSE</button></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+</div>
+
+<script src="/game.js"></script>
+</body>
+</html>

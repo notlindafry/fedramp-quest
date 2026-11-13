@@ -1,0 +1,25 @@
+{
+  "name": "fedramp-quest",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@upstash/ratelimit": "2.2.0",
+    "@upstash/redis": "1.40.0",
+    "next": "16.4.3",
+    "next-auth": "4.24.15",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/react": "19.2.18",
+    "typescript": "5.7.2"
+  }
+}
