@@ -636,17 +636,33 @@ function goMap() {
     const b = el("button", { class: "loc" + (state.cleared[l.id] ? (best >= 12 ? " gold" : " clear") : ""), type: "button",
       "aria-label": `${l.name}, ${l.topic}${built ? (state.cleared[l.id] ? `, cleared with ${best} of 15 stars` : "") : ", under construction"}`,
       on: { click: () => { sfx("blip"); enterLoc(l); } } });
+    b.dataset.id = l.id;
     b.style.left = (l.x / 180 * 100).toFixed(2) + "%";
     b.style.top = ((l.y + 6) / 260 * 100).toFixed(2) + "%";
     b.appendChild(el("span", { class: "n" }, l.name));
     b.appendChild(el("span", { class: "s" }, built ? l.topic : "COMING SOON"));
     locs.appendChild(b);
   }
+  requestAnimationFrame(clampLocs);
   const banner = $("#banner"); banner.className = "";
   if (session.mode === "guest") { banner.textContent = "Guest run: progress disappears when you close this tab."; banner.className = "warn"; }
   else if (session.mode === "local") { banner.textContent = "Saving unavailable: progress lasts only until you close this tab."; banner.className = "warn"; }
   else banner.textContent = "Every location is open. The path shows the suggested order.";
 }
+
+/* Keep every map label fully on screen, however narrow the phone. */
+function clampLocs() {
+  const map = $("#map"); if (!map) return;
+  const W = map.clientWidth, H = map.clientHeight, pad = 6;
+  document.querySelectorAll("#locs .loc").forEach(b => {
+    const id = b.dataset.id, l = LOCS.find(x => x.id === id); if (!l) return;
+    const w = b.offsetWidth, h = b.offsetHeight;
+    const cx = Math.min(Math.max(l.x / 180 * W, w / 2 + pad), W - w / 2 - pad);
+    const cy = Math.min(Math.max((l.y + 6) / 260 * H, h / 2 + pad), H - h / 2 - pad);
+    b.style.left = cx + "px"; b.style.top = cy + "px";
+  });
+}
+window.addEventListener("resize", () => { if ($("#overworld").classList.contains("on")) clampLocs(); });
 
 async function enterLoc(l) {
   state.last = l.id; save();
@@ -963,6 +979,9 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------------- Boot ---------------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(e => console.error("service worker failed", e)));
+}
 drawTitleArt();
 drawMap();
 applySettings();

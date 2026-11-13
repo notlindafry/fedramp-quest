@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full-bleed plate per design-system-rules §7; mark sits inside the maskable safe zone -->
+  <rect width="512" height="512" fill="#1D231C"/>
+  <path d="M192 380 V222 H168 V146 H196 V186 H248 V146 H264 V186 H316 V146 H344 V222 H320 V380 Z M230 380 V346 A26 26 0 0 1 282 346 V380"
+        fill="none" stroke="#7D9B83" stroke-width="28" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="256" cy="270" r="20" fill="#E6E4DB"/>
+</svg>
