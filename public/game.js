@@ -200,9 +200,13 @@ function drawCrossroads(ctx) {
 }
 
 const SCENES = { tower: drawTower, office: drawOffice, mine: drawMine, oracle: drawOracle, crossroads: drawCrossroads };
-function drawScene(name) {
+function drawScene(name, isNight) {
   const ctx = $("#sceneCanvas").getContext("2d");
   (SCENES[name] || drawOffice)(ctx);
+  if (isNight) {
+    ctx.fillStyle = "rgba(6, 8, 30, 0.55)"; ctx.fillRect(0, 0, 192, 108);
+    ctx.fillStyle = "#f4ecc0"; ctx.fillRect(170, 8, 8, 8); ctx.fillStyle = "rgba(6, 8, 30, 1)"; ctx.fillRect(173, 8, 5, 5);
+  }
 }
 
 function drawTitleArt() {
@@ -358,7 +362,7 @@ const VDR = {
         setup: [D("raj", "The vulnerability scanner on our east cluster stopped running two weeks ago. Its credentials expired. Nobody noticed, because technically it also stopped reporting problems.")],
         prompt: "The scanner went quiet for two weeks. What do you do?",
         choices: [
-          { text: "Log the outage itself as a vulnerability, fix the credentials, and rescan the cluster right away.", correct: true,
+          { text: "Log the outage as a vulnerability, fix it, and rescan the cluster right away.", correct: true,
             outcome: [D("raj", "Logged, fixed, rescanning. The rescan found two things it would have caught last week."),
                       D("dot", "That's the rule doing its job. Failures in detection MUST be treated as vulnerabilities, so the gap gets tracked and closed like any other finding.")] },
           { text: "Renew the credentials quietly. No findings came in, so nothing was missed.",
@@ -377,7 +381,7 @@ const VDR = {
         setup: [D("chad", "Great news! A bug bounty researcher found a way to make our export API fetch internal URLs. Raj says it's serious. But it doesn't have a CVE number, so it's not a FedRAMP thing. Right?")],
         prompt: "Is the bug bounty report a FedRAMP thing?",
         choices: [
-          { text: "Yes. Bug bounty reports are part of detection, so it goes through the same tracking, evaluation and response as anything a scanner finds.", correct: true,
+          { text: "Yes. Bug bounty reports are detection, so it goes through VDR.", correct: true,
             outcome: [D("chad", "So that's a no on the press release about our amazing researchers."),
                       D("dot", "Correct call. The rules list bug bounties and disclosure channels as detection methods. Where a vulnerability was found doesn't change whether it counts.")] },
           { text: "No. Fix it in the commercial backlog, since no scanner flagged it.",
@@ -392,13 +396,13 @@ const VDR = {
         setup: [D("raj", "Exhibit B. Your predecessor's spreadsheet. Every month someone copies scanner output into it by hand so compliance can report from it. It has 41 tabs. One is named FINAL_v7_real.")],
         prompt: "What happens to the spreadsheet?",
         choices: [
-          { text: "Retire it. Report straight from the engineering team's own vulnerability data, and automate the reporting.", correct: true,
+          { text: "Retire it. Report from engineering's own data, and automate the reporting.", correct: true,
             outcome: [D("raj", "I would hug you, but HR has a policy."),
                       D("dot", "Right. FedRAMP discourages separate FedRAMP-only processes run by compliance unless they consume data directly from the people who maintain the system, and it expects automation. One source of truth.")] },
-          { text: "Keep it. Assessors find spreadsheets reassuring.",
+          { text: "Keep it. Assessors trust a spreadsheet they've seen every month for years.",
             outcome: [D("pam", "Your spreadsheet says 12 open findings. Your engineering tracker says 19. Which one is true?"),
                       D("dot", "A hand-copied shadow tracker drifts from reality, and now you have two truths. The rules steer you away from compliance-only processes that don't use the engineers' real data.")] },
-          { text: "Hire a contractor to update it weekly instead of monthly.",
+          { text: "Keep it, but hire a contractor to update it weekly instead of monthly.",
             outcome: [D("raj", "Great, now FINAL_v8_real exists."),
                       D("dot", "Faster copying is still copying. The fix is one process fed by real engineering data, with automation doing the work. VDR says providers SHOULD use automated services.")] }
         ]
@@ -407,13 +411,13 @@ const VDR = {
         setup: [D("raj", "The request. The scanner can't log into the database hosts. Easiest fix: I open the management port to the whole internal network and give the scanner a shared admin password. Five minutes, tops.")],
         prompt: "Raj wants to loosen the database hosts so the scanner can get in. Your call?",
         choices: [
-          { text: "Decline. Find a way to scan that doesn't weaken the hosts, like a dedicated, tightly scoped scanner account or an agent on the host.", correct: true,
+          { text: "Decline, and find a scanning method that doesn't weaken the hosts.", correct: true,
             outcome: [D("raj", "Fine. Scoped account it is. Takes an hour instead of five minutes, which I will mention in standup."),
                       D("dot", "Good. VDR-CSO-MSP says providers SHOULD NOT weaken a resource's security to make scanning, detection or assessment easier.")] },
-          { text: "Approve it. Visibility is worth a little exposure.",
+          { text: "Approve it. Better scan coverage is worth a little extra internal exposure.",
             outcome: [D("raj", "On the bright side, the scanner immediately found a new vulnerability. It's the open port."),
                       D("dot", "You created a vulnerability to find vulnerabilities. VDR-CSO-MSP says don't weaken security to make scanning easier.")] },
-          { text: "Approve it, but only during scan windows.",
+          { text: "Approve it, but only during scan windows, and close the port afterward.",
             outcome: [D("pam", "Help me understand. Your admin port is wide open on a schedule?"),
                       D("dot", "Part-time weakening is still weakening, and detection is supposed to be persistent, not a scheduled event. Find a scanning method that doesn't open the door.")] }
         ]
@@ -422,11 +426,11 @@ const VDR = {
         setup: [D("chad", "Final thing! Raj's new container image is ready and an agency is waiting for the feature. Tiny catch: it includes a library on CISA's Known Exploited Vulnerabilities list. The patched version lands Monday. We ship Friday, yes?")],
         prompt: "Ship the new image on Friday?",
         choices: [
-          { text: "No. Hold the release until the image uses the patched library, and keep the current version running until then.", correct: true,
+          { text: "Hold the release until the image uses the patched library.", correct: true,
             outcome: [D("chad", "I'll tell the agency it's a quality thing."),
                       D("player", "It is a quality thing, Chad."),
                       D("dot", "Right call. Providers SHOULD NOT deploy new machine-based resources that have known exploited vulnerabilities. Something on the KEV list is being exploited in the wild right now.")] },
-          { text: "Ship it Friday and fix it within the normal timeframe.",
+          { text: "Ship it Friday and patch Monday, well inside the normal remediation window.",
             outcome: [D("ciso", "Help me explain to the agency why we deployed something on CISA's exploited list on purpose."),
                       D("dot", "The rules say providers SHOULD NOT deploy new machine-based resources that carry a KEV. You would be putting a known, actively exploited flaw into production by choice.")] },
           { text: "Ship it and call it mitigated, because the firewall should block the attack.",
@@ -443,9 +447,9 @@ const VDR = {
     ]
   }
 };
-const MODULES = Object.assign({ vdr: VDR }, window.FQ_MODULES || {});
+const MODULES = Object.assign({ vdr: VDR }, window.FQ_MODULES || {}, window.FQ_NIGHT || {});
 const NAMES = { dot: "DOT", player: null, raj: "RAJ", chad: "CHAD", pam: "PAM (3PAO)", ciso: "THE CISO", ao: "AGENCY AO" };
-const RANKS = [[0, "New Hire"], [60, "Control Wrangler"], [150, "ConMon Survivor"], [300, "Package Whisperer"], [500, "Boundary Keeper"], [700, "FedRAMP Sage"]];
+const RANKS = [[0, "New Hire"], [100, "Control Wrangler"], [300, "ConMon Survivor"], [600, "Package Whisperer"], [1000, "Boundary Keeper"], [1400, "FedRAMP Sage"]];
 
 /* ---------------- State and save layer ---------------- */
 function freshState() {
@@ -463,7 +467,7 @@ function validState(s) {
     const n = s.best[id]; if (Number.isInteger(n) && n >= 0 && n <= 15) out.best[id] = n;
   }
   if (s.cleared && typeof s.cleared === "object") for (const id of Object.keys(MODULES)) if (s.cleared[id] === true) out.cleared[id] = true;
-  if (Array.isArray(s.codex)) out.codex = s.codex.filter(id => typeof id === "string" && MODULES[id]).slice(0, 5);
+  if (Array.isArray(s.codex)) out.codex = s.codex.filter(id => typeof id === "string" && MODULES[id] && MODULES[id].recap).slice(0, 10);
   if (typeof s.last === "string" && LOCS.some(l => l.id === s.last)) out.last = s.last;
   const st = s.settings || {};
   if (["normal", "fast", "instant"].includes(st.speed)) out.settings.speed = st.speed;
@@ -633,6 +637,7 @@ function goMap() {
   for (const l of LOCS) {
     const built = !!MODULES[l.id];
     const best = state.best[l.id] || 0;
+    const nightClear = !!state.cleared[l.id + "_n"];
     const b = el("button", { class: "loc" + (state.cleared[l.id] ? (best >= 12 ? " gold" : " clear") : ""), type: "button",
       "aria-label": `${l.name}, ${l.topic}${built ? (state.cleared[l.id] ? `, cleared with ${best} of 15 stars` : "") : ", under construction"}`,
       on: { click: () => { sfx("blip"); enterLoc(l); } } });
@@ -640,7 +645,7 @@ function goMap() {
     b.style.left = (l.x / 180 * 100).toFixed(2) + "%";
     b.style.top = ((l.y + 6) / 260 * 100).toFixed(2) + "%";
     b.appendChild(el("span", { class: "n" }, l.name));
-    b.appendChild(el("span", { class: "s" }, built ? l.topic : "COMING SOON"));
+    b.appendChild(el("span", { class: "s" }, (built ? l.topic : "COMING SOON") + (nightClear ? " \u263E" : "")));
     locs.appendChild(b);
   }
   requestAnimationFrame(clampLocs);
@@ -675,7 +680,21 @@ async function enterLoc(l) {
     goMap();
     return;
   }
-  playModule(mod);
+  if (!MODULES[l.id + "_n"]) { playModule(mod); return; }
+  chooseLevel(l);
+}
+
+/* Each location has a Day Shift (primer + scenario) and a Night Shift (harder scenario). */
+function chooseLevel(l) {
+  $("#menuH").textContent = l.name;
+  const list = $("#menuList"); list.textContent = "";
+  const day = state.best[l.id], nite = state.best[l.id + "_n"];
+  const add = (label, fn) => list.appendChild(el("button", { class: "btn", type: "button", on: { click: () => { sfx("blip"); closeOv("menuOv"); fn(); } } }, label));
+  add("Day Shift: primer and scenario" + (day != null && state.cleared[l.id] ? ` (best ${day}/15)` : ""), () => playModule(MODULES[l.id]));
+  add("Night Shift: harder scenario" + (nite != null && state.cleared[l.id + "_n"] ? ` (best ${nite}/15)` : ""), () => playModule(MODULES[l.id + "_n"]));
+  add("Back to map", () => {});
+  list.appendChild(el("p", { class: "small" }, state.cleared[l.id] ? "Night Shift has no primer. Review the recap card in the Codex if you need it." : "Night Shift is easier after Day Shift, since it has no primer."));
+  openOv("menuOv");
 }
 
 /* ---------------- Dialog engine ---------------- */
@@ -779,14 +798,17 @@ async function playModule(mod) {
   session.aborted = false;
   show("scene");
   try {
-    drawScene(mod.primerScene);
-    $("#sceneHud").textContent = mod.title + " · PRIMER";
+    const isNight = mod.level === 2;
+    drawScene(mod.primerScene || mod.scenarioScene, isNight);
+    $("#sceneHud").textContent = mod.title + " · " + (isNight ? "BRIEFING" : "PRIMER");
     setPips(0, -1);
     await runLines(mod.primer, { back: true });
-    await showRecap(mod, true);
-    if (!state.codex.includes(mod.id)) { state.codex.push(mod.id); save(); }
+    if (mod.recap) {
+      await showRecap(mod, true);
+      if (!state.codex.includes(mod.id)) { state.codex.push(mod.id); save(); }
+    }
 
-    drawScene(mod.scenarioScene);
+    drawScene(mod.scenarioScene, isNight);
     $("#sceneHud").textContent = mod.title + " · " + mod.scenario.title;
     const ds = mod.scenario.decisions;
     setPips(ds.length, 0);
@@ -896,6 +918,7 @@ $("#exportClose").addEventListener("click", () => closeOv("exportOv"));
 
 /* ---------------- Menus ---------------- */
 function openMenu(inModule) {
+  $("#menuH").textContent = "MENU";
   const list = $("#menuList"); list.textContent = "";
   const add = (label, fn) => list.appendChild(el("button", { class: "btn", type: "button", on: { click: () => { sfx("blip"); fn(); } } }, label));
   add("Resume", () => closeOv("menuOv"));

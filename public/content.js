@@ -77,10 +77,10 @@
           setup: [D("chad", "I told an agency that our new AI summarizer is available in Halcyon Gov. It's in the commercial product, so it's basically in Gov, right?")],
           prompt: "Is the AI summarizer available to federal customers?",
           choices: [
-            { text: "Not yet. It's outside Halcyon Gov's boundary, so it has to be built into the boundary and assessed before federal customers can use it.", correct: true,
+            { text: "Not yet. It's outside Halcyon Gov's boundary until it's added and assessed.", correct: true,
               outcome: [D("chad", "Can we say 'coming soon'?"), D("player", "We can say 'not yet.'"),
                         D("dot", "Right. The boundary defines what the certification covers. Same brand doesn't mean same boundary.")] },
-            { text: "Yes. Same codebase, same features.",
+            { text: "Yes. It's the same codebase, so it's covered by the same certification.",
               outcome: [D("ao", "Your sales team says the AI feature is covered by your FedRAMP authorization. Your package doesn't mention it anywhere."),
                         D("dot", "Code in the commercial product isn't covered because it shares a name. Only what's inside the boundary and assessed is covered.")] },
             { text: "Yes, as long as federal users only use it for non-sensitive data.",
@@ -92,10 +92,10 @@
           setup: [D("raj", "Engineering wants to send Halcyon Gov's logs to SnazzyLogs, a commercial logging tool. It's genuinely great. It has no FedRAMP certification.")],
           prompt: "Can Halcyon Gov's logs go to SnazzyLogs?",
           choices: [
-            { text: "Hold off. A service receiving Halcyon Gov's data needs its own FedRAMP certification, or the gap has to be documented and accepted as a risk by the agency first.", correct: true,
+            { text: "Not yet. It needs its own certification or an agency risk decision.", correct: true,
               outcome: [D("raj", "So it's a certified logging vendor or a very awkward meeting. Got it."),
                         D("dot", "Exactly. Outside services that touch federal data are part of the risk the agency accepts, so they can't be added quietly.")] },
-            { text: "Go ahead. Logs aren't customer data.",
+            { text: "Go ahead. Logs are operational data, not customer data, so they're fine.",
               outcome: [D("pam", "Your logs include federal users' IDs and request contents. Where's the authorization for SnazzyLogs?"),
                         D("dot", "Logs often carry federal data. Treat any service that receives them as part of the risk picture.")] },
             { text: "Go ahead, and add it to the documentation at next year's assessment.",
@@ -107,13 +107,13 @@
           setup: [D("ao", "Quick question for your new GRC lead. Who decided Halcyon Gov was acceptable for my agency to use?")],
           prompt: "Who accepted the risk of using Halcyon Gov?",
           choices: [
-            { text: "Your agency's authorizing official, when they signed the ATO. The assessor tested the system and FedRAMP reviewed it, but the risk decision was your agency's.", correct: true,
+            { text: "Your agency's authorizing official, when they signed the ATO.", correct: true,
               outcome: [D("ao", "Correct. And I'd like to keep it that way."),
                         D("dot", "Assessors assess, FedRAMP reviews, and on the Agency path the agency accepts the risk. Keep those three straight and half your meetings get shorter.")] },
-            { text: "The 3PAO. They passed us.",
+            { text: "The 3PAO. Their assessment is what passed us, so the decision was theirs.",
               outcome: [D("pam", "Please never put that in writing. We test and report. We don't accept anyone's risk."),
                         D("dot", "Assessors don't accept risk. On the Agency path, the authorizing official does that when they sign the ATO.")] },
-            { text: "FedRAMP. They issued the authorization.",
+            { text: "FedRAMP. They review and approve the package, so the risk is theirs.",
               outcome: [D("ao", "I signed that ATO myself. I remember the coffee."),
                         D("dot", "On the Agency path, the sponsoring agency issues the ATO and its authorizing official accepts the risk. FedRAMP reviews and approves it for the program.")] }
           ]
@@ -122,13 +122,13 @@
           setup: [D("chad", "A prospect at another agency wants proof we're secure. Can I just email them our whole security package? It's a big PDF. Very convincing.")],
           prompt: "How should a prospect see Halcyon Gov's security package?",
           choices: [
-            { text: "Start them at Halcyon Gov's FedRAMP Marketplace listing, and share the package only through the controlled channel set up for agencies.", correct: true,
+            { text: "Send them to our Marketplace listing and the controlled package channel.", correct: true,
               outcome: [D("chad", "Fine. Can I at least send them a nice logo?"),
                         D("dot", "Good. A package describes exactly how the system is protected, so it goes to agencies through controlled channels. The Marketplace listing is where a prospect starts.")] },
-            { text: "Sure, email it. They're a federal agency.",
+            { text: "Email it. They're a federal agency, so they're entitled to the full package.",
               outcome: [D("raj", "Fun update. The PDF got forwarded to a contractor's personal email."),
                         D("dot", "The package holds sensitive details about the system's defenses. Uncontrolled email is how it ends up somewhere it shouldn't.")] },
-            { text: "Post it on the website so everyone can see how secure we are.",
+            { text: "Post it on our website so every agency can see how secure we are.",
               outcome: [D("pam", "You've published your security architecture. Attackers thank you for the reading material."),
                         D("dot", "Some certification information is meant to be public, like the Marketplace listing. The detailed package isn't.")] }
           ]
@@ -137,13 +137,13 @@
           setup: [D("chad", "Last one! A new customer needs High. We'll just tell them we're High now. We're basically secure.")],
           prompt: "Can Halcyon Gov start calling itself High?",
           choices: [
-            { text: "No. Moving up a class requires a new certification with all requirements met first. Let's scope what it would take before promising anything.", correct: true,
+            { text: "No. A higher class means a new certification, with everything met first.", correct: true,
               outcome: [D("ciso", "Thank you. Bring me a cost and a timeline, not a press release."),
                         D("dot", "Right. Upgrading class means a new certification, met in advance. High also adds many controls beyond Moderate, so the scope is real work.")] },
-            { text: "Yes, if we file a significant change notice.",
+            { text: "Yes. File a significant change notification, and the class updates with it.",
               outcome: [D("pam", "You can't notice your way into a higher class."),
                         D("dot", "Changing the impact level of the whole offering is a class change. It needs a new assessment, and significant change rules can't be used for it.")] },
-            { text: "Yes, once the assessor signs off on a few extra controls.",
+            { text: "Yes, once the assessor signs off on the extra High controls we'd add.",
               outcome: [D("ao", "A few extra controls? High isn't a sticker."),
                         D("dot", "There's no partial upgrade. A higher class means a new certification with every requirement met before you claim it.")] }
           ]
@@ -208,10 +208,10 @@
           setup: [D("raj", "The monthly package is due Friday. Three POA&M items are past their due dates. Chad suggests we just move the dates.")],
           prompt: "What do you do with the three overdue POA&M items?",
           choices: [
-            { text: "Keep the dates honest. Mark them overdue, explain why, and give each a realistic new plan in the package.", correct: true,
+            { text: "Keep the dates honest: mark them overdue and give each a real plan.", correct: true,
               outcome: [D("ao", "Thanks for flagging those. A credible plan I can work with."),
                         D("dot", "Overdue items with a credible plan are a conversation. Quietly moved dates are an integrity problem, and agencies notice.")] },
-            { text: "Move the due dates out 90 days so nothing shows as overdue.",
+            { text: "Move the due dates out 90 days, so nothing shows as overdue this month.",
               outcome: [D("pam", "Your POA&M history shows these dates moved three times with no explanation. Help me understand."),
                         D("dot", "Moving dates hides the slip without fixing anything. The history is visible, and now trust is the problem instead of three findings.")] },
             { text: "Leave them off this month's package and add them back once they're fixed.",
@@ -223,13 +223,13 @@
           setup: [D("raj", "A high finding says our web servers run a vulnerable version of a library. They don't. The scanner reads the version wrong.")],
           prompt: "How do you handle a finding Raj says is a false positive?",
           choices: [
-            { text: "Collect evidence that the vulnerable version isn't present, then submit it as a false positive for the agency to accept.", correct: true,
+            { text: "Gather evidence the version isn't there, then submit a false positive.", correct: true,
               outcome: [D("raj", "Screenshots, package manifests and a very smug comment. On it."),
                         D("dot", "Evidence first. A false positive is a claim, and the agency accepts it based on proof. Under VER you SHOULD also evaluate false positives as part of normal evaluation.")] },
-            { text: "Close it. Raj is confident.",
+            { text: "Close it. Raj knows the stack, and the scanner is clearly misreading it.",
               outcome: [D("pam", "Confidence is lovely. Do you have evidence?"),
                         D("dot", "A finding closes on evidence, not certainty. Without proof, it's still open.")] },
-            { text: "Lower it to low severity so it stops mattering.",
+            { text: "Lower it to low severity, since the real risk is close to zero.",
               outcome: [D("pam", "So it's not real, but you also kept it, at a lower severity? Which is it?"),
                         D("dot", "Lowering severity is a risk adjustment, a different request with its own justification. Using it to hide a false positive mislabels the problem.")] }
           ]
@@ -238,10 +238,10 @@
           setup: [D("raj", "Big one. Next quarter we're moving Halcyon Gov to a new data center region. All the federal data moves with it.")],
           prompt: "Under the 2026 change rules, what does this migration require?",
           choices: [
-            { text: "It's a transformative change. Notify all necessary parties of initial plans at least 30 business days before starting, and final plans at least 10 business days before.", correct: true,
+            { text: "Transformative: initial notice 30 business days ahead, final notice 10.", correct: true,
               outcome: [D("raj", "Thirty business days. I'll tell the migration team their deadline just moved up."),
                         D("dot", "Right. Data center migrations involving lots of federal data are FedRAMP's own example of a transformative change.")] },
-            { text: "It's routine. It's just infrastructure.",
+            { text: "Routine. It's infrastructure work, and agencies won't notice any difference.",
               outcome: [D("ao", "I found out you moved our data to a new region from my own monitoring. Not from you."),
                         D("dot", "Routine means things like patching and scaling. A data center migration with federal data is transformative and needs notice in advance.")] },
             { text: "It's adaptive. Notify everyone within 10 business days after it's done.",
@@ -253,10 +253,10 @@
           setup: [D("chad", "Budget idea! Last year's findings are fixed, so let's ask Pam to skip those controls this year. Saves a whole week.")],
           prompt: "Should this year's assessment skip last year's problem controls?",
           choices: [
-            { text: "No. Controls with negative findings in the previous assessment must be included in the next one, so they stay in scope.", correct: true,
+            { text: "No. Controls with findings last year must be in this year's assessment.", correct: true,
               outcome: [D("pam", "Good, because I was going to include them anyway."),
                         D("dot", "Correct. Last year's problem controls get retested. Fixed is a claim until an assessor confirms it.")] },
-            { text: "Yes. Fixed is fixed.",
+            { text: "Yes. Those controls were fixed, so retesting them would waste a week.",
               outcome: [D("pam", "I can't skip them. The rules require me to retest last year's findings."),
                         D("dot", "Under the 2026 rules, controls with negative findings in the previous assessment MUST be in the next one.")] },
             { text: "Yes, but keep last year's fix evidence on file in case anyone asks.",
@@ -268,13 +268,13 @@
           setup: [D("ciso", "I read that the new rules use quarterly reports and reviews instead of monthly packages. Can your team stop doing monthly ConMon this winter?")],
           prompt: "Should the team stop the monthly ConMon package now?",
           choices: [
-            { text: "No. Keep the monthly process until we formally adopt the new rules, and plan the switch ahead of the 2027 deadlines. The VER monthly report starts December 7 either way.", correct: true,
+            { text: "No. Keep monthly until we adopt the new rules, then switch.", correct: true,
               outcome: [D("ciso", "Sensible. Put the switch on the roadmap so I can see it."),
                         D("dot", "Right. New rules apply when you adopt them or when the deadlines arrive. Until then, your agency expects the process you're on.")] },
-            { text: "Yes, stop now. Quarterly is the new standard.",
+            { text: "Yes. Quarterly reporting is the new standard, so monthly work is wasted.",
               outcome: [D("ao", "We didn't get your monthly package. Is everything all right over there?"),
                         D("dot", "Stopping the old process before adopting the new one leaves a gap. Plan the switch; don't just stop.")] },
-            { text: "Yes, and skip the quarterly review too. It's optional for us.",
+            { text: "Yes, and skip the quarterly review too, since it's optional for our class.",
               outcome: [D("pam", "For a Class C offering, hosting the quarterly review isn't optional."),
                         D("dot", "For Class C, the quarterly review is a MUST. It's optional only for Class A.")] }
           ]
@@ -340,13 +340,13 @@
           setup: [D("raj", "Two findings came in with the same scanner score. One is in the customer-facing API that holds agency records. The other is in an internal build tool that touches no federal data.")],
           prompt: "How do you rate the two findings?",
           choices: [
-            { text: "Rate each in its own context. The API finding likely gets a high PAIN rating and the build tool a much lower one, so their deadlines differ.", correct: true,
+            { text: "Rate each in its own context. The API finding likely rates far higher.", correct: true,
               outcome: [D("raj", "So the API gets days and the build tool gets months. My weekend thanks you."),
                         D("dot", "Right. VER rates potential agency impact, reachability and exploitability, so an identical scanner score can land very differently.")] },
-            { text: "Same score, same rating. Consistency matters.",
+            { text: "Same score, same rating. Consistent ratings are easier to defend.",
               outcome: [D("pam", "Your build tool has the same urgency as your agency-facing API? Walk me through that."),
                         D("dot", "VER doesn't rate on scanner score. It rates on what exploitation would do to agencies, in this system's real context.")] },
-            { text: "Rate both N5 to be safe.",
+            { text: "Rate both N5 to be safe, since overrating is better than underrating.",
               outcome: [D("raj", "We now have 400 N5s and no idea which ones actually matter."),
                         D("dot", "Overrating everything buries the urgent findings and burns your shortest deadlines on things that don't need them.")] }
           ]
@@ -355,10 +355,10 @@
           setup: [D("raj", "This one's in a database behind the firewall. No internet route at all. So it's not internet-reachable, right?")],
           prompt: "Is the database finding internet-reachable?",
           choices: [
-            { text: "Not necessarily. If the database processes payloads that arrive through the internet-facing API, it can still be internet-reachable.", correct: true,
+            { text: "Possibly. If it processes payloads passed in by the API, it's reachable.", correct: true,
               outcome: [D("raj", "Huh. The API does pass search queries straight through to it."),
                         D("dot", "Exactly. Internet-reachable means an internet-originating payload might trigger it, even without a direct route.")] },
-            { text: "Right. Behind the firewall means not reachable.",
+            { text: "Right. Behind the firewall with no internet route means not reachable.",
               outcome: [D("pam", "Your API forwards user input to that database. So a request from the internet reaches it, doesn't it?"),
                         D("dot", "A firewall stops direct connections, not payloads that ride in through your own API. Reachability follows the data.")] },
             { text: "Right, and since it's internal, it's also not likely exploitable.",
@@ -369,10 +369,10 @@
           setup: [D("raj", "I really doubt anyone could automate an attack on this one. Gut feel. Can we treat it as manual-only?")],
           prompt: "What do you assume about automation?",
           choices: [
-            { text: "Assume it can be automated unless we have evidence it can't, and rate it accordingly.", correct: true,
+            { text: "Assume it can be automated unless we have evidence otherwise.", correct: true,
               outcome: [D("raj", "Fine. My gut is overruled."),
                         D("dot", "Correct. VER makes automation the default assumption. Only evidence moves you off it.")] },
-            { text: "Treat it as manual. Raj knows the system.",
+            { text: "Treat it as manual. Raj knows the system better than any default does.",
               outcome: [D("pam", "What's the evidence that it can't be automated?"),
                         D("raj", "...Vibes?"),
                         D("dot", "Assuming manual exploitation without evidence breaks a MUST. Gut feel isn't evidence.")] },
@@ -384,13 +384,13 @@
           setup: [D("chad", "This old finding just hit day 192, and the fix needs a rewrite we can't afford this year. Can we just leave it open on the list forever?")],
           prompt: "What happens to a finding at day 192?",
           choices: [
-            { text: "It must be categorized as an accepted vulnerability, with a written explanation of why, and reported that way.", correct: true,
+            { text: "Categorize it as an accepted vulnerability, with a written explanation.", correct: true,
               outcome: [D("chad", "So we have to explain ourselves in writing. Bold."),
                         D("dot", "Right. After 192 days a finding becomes an accepted vulnerability, and accepted ones carry an explanation that agencies can weigh.")] },
-            { text: "Leave it open. Open is open.",
+            { text: "Leave it open on the list. Open findings are honest, and it's still tracked.",
               outcome: [D("ao", "This finding has been open for over six months with no explanation. Is anyone planning to fix it?"),
                         D("dot", "Anything not fixed within 192 days MUST be categorized as accepted, with the reason documented. Leaving it in limbo doesn't meet the rule.")] },
-            { text: "Delete it from the tracker. Out of sight, out of mind.",
+            { text: "Delete it from the tracker, since we've decided not to fix it.",
               outcome: [D("pam", "A finding vanished from your records without a fix. That's going in my report."),
                         D("dot", "Deleting a real vulnerability misrepresents the system. Accepted vulnerabilities stay on the record with their explanation.")] }
           ]
@@ -399,10 +399,10 @@
           setup: [D("raj", "Bad one. Likely exploitable, internet-reachable, and we rate it N4. We're Class C.")],
           prompt: "What happens now?",
           choices: [
-            { text: "Mitigate it below N4 within 4 days, and treat it as a FedRAMP reportable incident until it's down to N3 or below.", correct: true,
+            { text: "Mitigate below N4 within 4 days, and treat it as reportable meanwhile.", correct: true,
               outcome: [D("ciso", "Four days. Clear the decks, and loop me in on the incident report."),
                         D("dot", "Right. Class C gives an LEV, IRV N4 finding 4 days, and anything internet-reachable and likely exploitable above N3 SHOULD be treated as reportable until it's mitigated to N3 or below.")] },
-            { text: "Fix it within the usual 30 days for high findings.",
+            { text: "Fix it within the usual 30 days, since it's a high-severity finding.",
               outcome: [D("ao", "Thirty days for a likely exploitable, internet-reachable N4? Why wasn't I told?"),
                         D("dot", "The flat 30-day clock is gone. For this combination in Class C, you have 4 days, and it should be treated as a reportable incident meanwhile.")] },
             { text: "Fix it within 4 days. No need to tell anyone unless it's exploited.",
@@ -467,13 +467,13 @@
           setup: [D("ciso", "Should Halcyon Gov move from Rev 5 to 20x? What's your first move?")],
           prompt: "What do you need to know first?",
           choices: [
-            { text: "How much of our security evidence is already automated, what our agency customers require, and whether the class we need is supported on 20x yet.", correct: true,
+            { text: "Our evidence automation, agency requirements, and class support.", correct: true,
               outcome: [D("ciso", "Good. That's a real plan, not a vibe."),
                         D("dot", "Right. 20x pays off when evidence is automated, customers will accept it, and the class you need is available.")] },
-            { text: "Nothing. 20x is newer, so it's better. Let's switch.",
+            { text: "Nothing more. 20x is the future, so moving early is the safe bet.",
               outcome: [D("raj", "Quick question: who's automating the evidence?"),
                         D("dot", "Newer isn't a business case. 20x rewards automated evidence and asks a lot of engineering. You need to know whether you have it.")] },
-            { text: "What it would cost to rewrite our SSP for 20x.",
+            { text: "What it would cost to rewrite our SSP into the 20x format.",
               outcome: [D("dot", "20x proves Key Security Indicators with evidence instead of narratives, so the SSP rewrite is the wrong yardstick. Measure your evidence automation instead.")] }
           ]
         },
@@ -481,13 +481,13 @@
           setup: [D("raj", "Good news: our pipelines already produce most of the KSI evidence. Probably. I think.")],
           prompt: "How do you test Raj's claim?",
           choices: [
-            { text: "Map each KSI to the specific automated evidence that proves it today, and list the gaps. That turns 'probably' into a number.", correct: true,
+            { text: "Map each KSI to the evidence that proves it today, and list the gaps.", correct: true,
               outcome: [D("raj", "Mapping started. It's... more gaps than I thought."),
                         D("dot", "That's the point of mapping. Better to find the gaps now than during an assessment.")] },
-            { text: "Take his word for it. He's the engineer.",
+            { text: "Take his word for it. He runs the pipelines, so he'd know.",
               outcome: [D("pam", "Your assessment readiness memo says 'probably.' I can't assess 'probably.'"),
                         D("dot", "Trust, then verify. A KSI-by-KSI map is the only way to know what you actually have.")] },
-            { text: "Let the assessor find the gaps during the assessment.",
+            { text: "Let the assessor find the gaps. That's what we're paying them for.",
               outcome: [D("ciso", "So we paid for an assessment to tell us we weren't ready?"),
                         D("dot", "Finding gaps during the assessment is the most expensive place to find them.")] }
           ]
@@ -496,13 +496,13 @@
           setup: [D("chad", "Can we update the website to say 'FedRAMP 20x Certified'? We're basically there.")],
           prompt: "What can the website say?",
           choices: [
-            { text: "Nothing about 20x certification until FedRAMP grants it. Until then, we can accurately say we're pursuing it.", correct: true,
+            { text: "Nothing until FedRAMP grants it. 'Pursuing' is accurate.", correct: true,
               outcome: [D("chad", "'Pursuing' is less fun but fine."),
                         D("dot", "Right. A certification claim has to be true when you make it. Accurate status protects every agency conversation that follows.")] },
-            { text: "Yes, with a small asterisk.",
+            { text: "Yes, with an asterisk saying certification is pending final review.",
               outcome: [D("ao", "Your site says certified. The Marketplace says otherwise. Which one is lying?"),
                         D("dot", "An asterisk doesn't fix a false claim. Agencies check the Marketplace.")] },
-            { text: "Yes, since we're already Rev 5 certified.",
+            { text: "Yes. We're already Rev 5 certified, and 20x is the same program.",
               outcome: [D("pam", "Rev 5 and 20x are different certification Types. One doesn't count as the other."),
                         D("dot", "Different Types, different certifications. Your Rev 5 certification doesn't make you 20x certified.")] }
           ]
@@ -511,13 +511,13 @@
           setup: [D("raj", "It's 2 a.m. on a Saturday. An automated KSI check just failed: MFA got switched off on an admin account during a config change.")],
           prompt: "What process owns this failure?",
           choices: [
-            { text: "VDR. A failed validation is a finding, so it's tracked, evaluated, fixed and reported like any vulnerability.", correct: true,
+            { text: "VDR. A failed validation is a vulnerability to track, fix and report.", correct: true,
               outcome: [D("raj", "MFA's back on, the finding's logged, and I'm going back to bed."),
                         D("dot", "Right. Failures in your detection and validation are vulnerabilities, not dashboard colors.")] },
-            { text: "It can wait for the next quarterly review.",
+            { text: "It can wait for the next quarterly review, where KSIs get discussed.",
               outcome: [D("pam", "An admin account sat without MFA for six weeks because it was waiting for a meeting?"),
                         D("dot", "Quarterly reviews summarize. They don't replace response. A failed validation goes straight into VDR.")] },
-            { text: "Nobody needs to act. The check will pass again once the config change finishes.",
+            { text: "Nobody. The check will pass again once the config change finishes.",
               outcome: [D("raj", "It did not pass again. The config change finished three days ago."),
                         D("dot", "Assuming it fixes itself is how drift becomes an incident. Treat the failure as a vulnerability.")] }
           ]
@@ -526,13 +526,13 @@
           setup: [D("ciso", "Final answer. Halcyon Gov is Rev 5, Agency path, Class C. What do we do?")],
           prompt: "Your recommendation to the CISO:",
           choices: [
-            { text: "Stay on Rev 5 and meet the new 2026 and 2027 rules first, while building KSI evidence automation. Revisit 20x once the evidence is real and our agencies are ready for it.", correct: true,
+            { text: "Stay on Rev 5, meet the new rules, and build KSI automation first.", correct: true,
               outcome: [D("ciso", "That fits on one slide. Thank you."),
                         D("dot", "That's the defensible call. The VDR, VER and 2027 rules build the same automation 20x rewards, so none of the work is wasted.")] },
-            { text: "Drop Rev 5 now and apply for 20x next month.",
+            { text: "Drop Rev 5 now and apply for 20x next month, before rules change again.",
               outcome: [D("ao", "If your Rev 5 certification lapses, what covers our use of Halcyon Gov in the meantime?"),
                         D("dot", "Abandoning the certification you have before a replacement exists leaves your agencies uncovered. And the evidence isn't automated yet.")] },
-            { text: "Pursue Rev 5 Program and 20x Program certifications at the same time, to hedge.",
+            { text: "Pursue Rev 5 Program and 20x Program at the same time, to hedge.",
               outcome: [D("pam", "The rules say you can't pursue both Program certifications for the same offering."),
                         D("dot", "FedRAMP says providers MUST NOT pursue both Rev 5 Program and 20x Program certification for the same offering.")] }
           ]

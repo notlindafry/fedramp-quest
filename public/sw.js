@@ -2,8 +2,8 @@
    Network first for the game's own static files, falling back to the last
    cached copy when offline. Never touches /api: sign-in and saves always go
    to the network, and nothing private is ever cached. */
-const CACHE = "fq-static-v1";
-const SHELL = ["/", "/index.html", "/game.css", "/game.js", "/content.js", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/favicon.svg"];
+const CACHE = "fq-static-v2";
+const SHELL = ["/", "/index.html", "/game.css", "/game.js", "/content.js", "/content2.js", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/favicon.svg"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
