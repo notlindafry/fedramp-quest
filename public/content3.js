@@ -162,7 +162,7 @@
       D("dot", "Third-party information resources are anything not entirely inside your scope: a SaaS tool, an outside API, another provider's service. For each one, you MUST document how it's used and configured, why you use it, mitigations, and compensating controls."),
       D("player", "So adding a vendor is a documentation event."),
       D("dot", "And a risk decision. Agencies read that list."),
-      D("dot", "Under 20x, every Key Security Indicator applies to everything within the Minimum Assessment Scope. Draw the scope wide, and every KSI follows it."),
+      D("dot", "Under 20x, the newer approach you'll meet at the Crossroads, Key Security Indicators, or KSIs, are the measurable security outcomes a provider has to show. Every KSI applies to everything within the Minimum Assessment Scope. Draw the scope wide, and every KSI follows it."),
       D("dot", "Corporate systems are the hard part: email, HR, the laptop fleet, the identity provider. They're in scope only if they're likely to handle federal data or affect it. An identity provider that controls admin access to Halcyon Gov usually clears that bar. The cafeteria menu app doesn't."),
       D("dot", "Software that isn't a cloud service, like a desktop tool an agency installs and runs itself, is outside FedRAMP's scope entirely. The cloud services that tool talks to are a different story."),
       D("dot", "You MAY describe resources beyond the scope in a supplement, clearly marked and separated. They don't become certified by being described."),
