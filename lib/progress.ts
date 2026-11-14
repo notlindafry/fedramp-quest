@@ -5,6 +5,7 @@ import { z } from "zod";
 const MODULE_IDS = [
   "foundations", "conmon", "vdr", "ver", "twentyx",
   "foundations_n", "conmon_n", "vdr_n", "ver_n", "twentyx_n",
+  "crosswalk", "scope", "crosswalk_n", "scope_n",
 ] as const;
 const moduleId = z.enum(MODULE_IDS);
 const NAME_RE = /^[A-Za-z0-9 .'\-]{1,16}$/;
@@ -14,7 +15,7 @@ export const ProgressSchema = z.object({
   name: z.string().trim().regex(NAME_RE),
   best: z.partialRecord(moduleId, z.number().int().min(0).max(15)),
   cleared: z.partialRecord(moduleId, z.literal(true)),
-  codex: z.array(moduleId).max(10),
+  codex: z.array(moduleId).max(14),
   last: z.union([moduleId, z.literal("")]),
   settings: z.object({
     speed: z.enum(["normal", "fast", "instant"]),

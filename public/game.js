@@ -199,7 +199,53 @@ function drawCrossroads(ctx) {
   ctx.fillStyle = "#3a2a1a"; ctx.fillRect(79, 38, 12, 1); ctx.fillRect(80, 40, 8, 1); ctx.fillRect(100, 46, 12, 1); ctx.fillRect(101, 48, 8, 1);
 }
 
-const SCENES = { tower: drawTower, office: drawOffice, mine: drawMine, oracle: drawOracle, crossroads: drawCrossroads };
+function drawLibrary(ctx) {
+  ctx.fillStyle = "#2a1f18"; ctx.fillRect(0, 0, 192, 108);
+  // shelves of books, three bays
+  const spines = ["#b8577c", "#7d9b83", "#c9a86b", "#5a6b8c", "#e6e4db", "#8a3a3a", "#3f8f5a", "#6a4aa8"];
+  for (let bay = 0; bay < 3; bay++) {
+    const x0 = 8 + bay * 62;
+    ctx.fillStyle = "#4e3524"; ctx.fillRect(x0, 8, 54, 76);
+    for (let row = 0; row < 4; row++) {
+      const y = 12 + row * 18;
+      ctx.fillStyle = "#1a1410"; ctx.fillRect(x0 + 3, y, 48, 14);
+      for (let x = x0 + 4; x < x0 + 50; x += 3) {
+        const h = 9 + Math.floor(noise(x, y) * 5);
+        ctx.fillStyle = spines.at(Math.floor(noise(y, x) * spines.length));
+        ctx.fillRect(x, y + 14 - h, 2, h);
+      }
+      ctx.fillStyle = "#6b4a32"; ctx.fillRect(x0, y + 14, 54, 2);
+    }
+  }
+  // floor, reading table and a glowing tablet (the Rosetta crosswalk)
+  ctx.fillStyle = "#3a2c22"; ctx.fillRect(0, 86, 192, 22);
+  ctx.fillStyle = "#6b4a32"; ctx.fillRect(66, 80, 60, 6); ctx.fillRect(70, 86, 4, 16); ctx.fillRect(118, 86, 4, 16);
+  ctx.fillStyle = "#7d9b83"; ctx.fillRect(84, 70, 24, 10); ctx.fillStyle = "#e6e4db";
+  for (let y = 72; y < 79; y += 2) ctx.fillRect(87, y, 18, 1);
+  ctx.fillStyle = "rgba(247,208,70,0.12)"; ctx.fillRect(74, 60, 44, 26);
+}
+
+function drawGatehouse(ctx) {
+  const bands = ["#5c8fd6", "#7aa6e0", "#a6c4ea"];
+  bands.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(0, i * 14, 192, 14); });
+  ctx.fillStyle = "#a6c4ea"; ctx.fillRect(0, 42, 192, 20);
+  // wall
+  ctx.fillStyle = "#8a8070"; ctx.fillRect(0, 46, 192, 46);
+  ctx.fillStyle = "#6a6050";
+  for (let y = 46; y < 92; y += 6) { ctx.fillRect(0, y, 192, 1); for (let x = (y / 6) % 2 ? 0 : 6; x < 192; x += 12) ctx.fillRect(x, y, 1, 6); }
+  for (let x = 0; x < 192; x += 12) { ctx.fillStyle = "#8a8070"; ctx.fillRect(x, 38, 8, 8); }
+  // gate tower and gate
+  ctx.fillStyle = "#7a7062"; ctx.fillRect(72, 26, 48, 66);
+  for (let x = 72; x < 120; x += 10) ctx.fillRect(x, 20, 6, 6);
+  ctx.fillStyle = "#141428"; ctx.fillRect(84, 56, 24, 36); ctx.fillRect(88, 52, 16, 4);
+  ctx.fillStyle = "#3a3c4c"; for (let x = 86; x < 108; x += 5) ctx.fillRect(x, 56, 1, 36); for (let y = 60; y < 92; y += 6) ctx.fillRect(84, y, 24, 1);
+  // ground, path and a checkpoint lantern
+  ctx.fillStyle = "#3a7d44"; ctx.fillRect(0, 92, 192, 16);
+  ctx.fillStyle = "#c9a86b"; ctx.fillRect(84, 92, 24, 16);
+  ctx.fillStyle = "#f7d046"; ctx.fillRect(124, 66, 4, 6); ctx.fillStyle = "#3a3c4c"; ctx.fillRect(125, 72, 2, 20);
+}
+
+const SCENES = { tower: drawTower, office: drawOffice, mine: drawMine, oracle: drawOracle, crossroads: drawCrossroads, library: drawLibrary, gatehouse: drawGatehouse };
 function drawScene(name, isNight) {
   const ctx = $("#sceneCanvas").getContext("2d");
   (SCENES[name] || drawOffice)(ctx);
@@ -220,7 +266,9 @@ const LOCS = [
   { id: "conmon",      x: 38,  y: 160, name: "CONMON MINES", topic: "Continuous monitoring" },
   { id: "vdr",         x: 138, y: 150, name: "WATCHTOWER",   topic: "VDR" },
   { id: "ver",         x: 46,  y: 78,  name: "ORACLE",       topic: "VER" },
-  { id: "twentyx",     x: 132, y: 40,  name: "CROSSROADS",   topic: "FedRAMP 20x" }
+  { id: "twentyx",     x: 132, y: 40,  name: "CROSSROADS",   topic: "FedRAMP 20x" },
+  { id: "scope",       x: 154, y: 212, name: "GATEHOUSE",    topic: "Scope" },
+  { id: "crosswalk",   x: 96,  y: 112, name: "LIBRARY",      topic: "One control set" }
 ];
 function drawMap() {
   const ctx = $("#mapCanvas").getContext("2d");
@@ -237,6 +285,10 @@ function drawMap() {
   // path linking locations in suggested order
   ctx.fillStyle = "#c9a86b";
   const order = ["foundations", "conmon", "vdr", "ver", "twentyx"].map(id => LOCS.find(l => l.id === id));
+  // spurs to the newer locations: HQ to the Gatehouse, Crossroads to the Library
+  const spur = (a, b) => { for (let s = 0; s <= 60; s++) { const t = s / 60; const x = Math.round(a.x + (b.x - a.x) * t), y = Math.round(a.y + (b.y - a.y) * t); if (s % 3 !== 2) ctx.fillRect(x - 1, y - 1, 3, 3); } };
+  ctx.fillStyle = "#c9a86b";
+  spur(LOCS.at(0), LOCS.at(5)); spur(LOCS.at(4), LOCS.at(6));
   for (let i = 0; i < order.length - 1; i++) {
     const a = order.at(i), b = order.at(i + 1);
     const steps = 60;
@@ -263,6 +315,14 @@ function drawMap() {
   const or = LOCS.at(3); ctx.fillStyle = "#6a4aa8"; ctx.fillRect(or.x - 4, or.y - 34, 8, 24); ctx.fillStyle = "#9a7ad8"; ctx.fillRect(or.x - 2, or.y - 42, 4, 8);
   ctx.fillStyle = "#f4ecc0"; ctx.fillRect(or.x - 1, or.y - 46, 2, 3);
   const cr = LOCS.at(4); ctx.fillStyle = "#7a5a3a"; ctx.fillRect(cr.x - 1, cr.y - 32, 2, 22); ctx.fillStyle = "#c9a86b"; ctx.fillRect(cr.x - 10, cr.y - 30, 10, 4); ctx.fillRect(cr.x, cr.y - 24, 10, 4);
+  // Gatehouse: a wall segment with an arched gate
+  const gh = LOCS.at(5); ctx.fillStyle = "#8a8070"; ctx.fillRect(gh.x - 18, gh.y - 22, 36, 12); ctx.fillRect(gh.x - 8, gh.y - 30, 16, 20);
+  ctx.fillStyle = "#6a6050"; for (let x = gh.x - 18; x < gh.x + 18; x += 6) ctx.fillRect(x, gh.y - 26, 4, 4);
+  ctx.fillStyle = "#141428"; ctx.fillRect(gh.x - 4, gh.y - 20, 8, 10); ctx.fillStyle = "#c9a86b"; ctx.fillRect(gh.x - 4, gh.y - 20, 8, 1);
+  // Library: columns and a pediment
+  const lb = LOCS.at(6); ctx.fillStyle = "#e6e4db"; ctx.fillRect(lb.x - 14, lb.y - 30, 28, 4); ctx.fillRect(lb.x - 12, lb.y - 34, 24, 4);
+  ctx.fillStyle = "#c8c8d8"; for (let x = lb.x - 12; x <= lb.x + 9; x += 7) ctx.fillRect(x, lb.y - 26, 3, 14);
+  ctx.fillStyle = "#a8a8b8"; ctx.fillRect(lb.x - 15, lb.y - 12, 30, 3);
 }
 
 /* ---------------- Utilities ---------------- */
@@ -449,7 +509,7 @@ const VDR = {
 };
 const MODULES = Object.assign({ vdr: VDR }, window.FQ_MODULES || {}, window.FQ_NIGHT || {});
 const NAMES = { dot: "DOT", player: null, raj: "RAJ", chad: "CHAD", pam: "PAM (3PAO)", ciso: "THE CISO", ao: "AGENCY AO" };
-const RANKS = [[0, "New Hire"], [100, "Control Wrangler"], [300, "ConMon Survivor"], [600, "Package Whisperer"], [1000, "Boundary Keeper"], [1400, "FedRAMP Sage"]];
+const RANKS = [[0, "New Hire"], [150, "Control Wrangler"], [450, "ConMon Survivor"], [900, "Package Whisperer"], [1400, "Boundary Keeper"], [1950, "FedRAMP Sage"]];
 
 /* ---------------- State and save layer ---------------- */
 function freshState() {
@@ -467,7 +527,7 @@ function validState(s) {
     const n = s.best[id]; if (Number.isInteger(n) && n >= 0 && n <= 15) out.best[id] = n;
   }
   if (s.cleared && typeof s.cleared === "object") for (const id of Object.keys(MODULES)) if (s.cleared[id] === true) out.cleared[id] = true;
-  if (Array.isArray(s.codex)) out.codex = s.codex.filter(id => typeof id === "string" && MODULES[id] && MODULES[id].recap).slice(0, 10);
+  if (Array.isArray(s.codex)) out.codex = s.codex.filter(id => typeof id === "string" && MODULES[id] && MODULES[id].recap).slice(0, 14);
   if (typeof s.last === "string" && LOCS.some(l => l.id === s.last)) out.last = s.last;
   const st = s.settings || {};
   if (["normal", "fast", "instant"].includes(st.speed)) out.settings.speed = st.speed;
