@@ -262,13 +262,13 @@ function drawTitleArt() {
 
 /* Overworld map, 180 x 260 logical pixels */
 const LOCS = [
-  { id: "foundations", x: 90,  y: 222, name: "HALCYON HQ",  topic: "Rev 5 foundations" },
-  { id: "conmon",      x: 38,  y: 160, name: "CONMON MINES", topic: "Continuous monitoring" },
-  { id: "vdr",         x: 138, y: 150, name: "WATCHTOWER",   topic: "VDR" },
-  { id: "ver",         x: 46,  y: 78,  name: "ORACLE",       topic: "VER" },
-  { id: "twentyx",     x: 132, y: 40,  name: "CROSSROADS",   topic: "FedRAMP 20x" },
-  { id: "scope",       x: 154, y: 212, name: "GATEHOUSE",    topic: "Scope" },
-  { id: "crosswalk",   x: 96,  y: 112, name: "LIBRARY",      topic: "One control set" }
+  { id: "foundations", x: 126, y: 238, name: "HALCYON HQ",  topic: "Rev 5 foundations" },
+  { id: "conmon",      x: 36,  y: 146, name: "CONMON MINES", topic: "Continuous monitoring" },
+  { id: "vdr",         x: 132, y: 114, name: "WATCHTOWER",   topic: "VDR" },
+  { id: "ver",         x: 32,  y: 82,  name: "ORACLE",       topic: "VER" },
+  { id: "twentyx",     x: 132, y: 46,  name: "CROSSROADS",   topic: "FedRAMP 20x" },
+  { id: "scope",       x: 38,  y: 206, name: "GATEHOUSE",    topic: "Scope" },
+  { id: "crosswalk",   x: 138, y: 176, name: "LIBRARY",      topic: "One control set" }
 ];
 function drawMap() {
   const ctx = $("#mapCanvas").getContext("2d");
@@ -284,11 +284,8 @@ function drawMap() {
   for (let y = 0; y < 260; y += 5) { const x = 90 + Math.round(Math.sin(y / 22) * 14) - y / 8; ctx.fillRect(Math.round(x), y, 3, 1); }
   // path linking locations in suggested order
   ctx.fillStyle = "#c9a86b";
-  const order = ["foundations", "conmon", "vdr", "ver", "twentyx"].map(id => LOCS.find(l => l.id === id));
-  // spurs to the newer locations: HQ to the Gatehouse, Crossroads to the Library
-  const spur = (a, b) => { for (let s = 0; s <= 60; s++) { const t = s / 60; const x = Math.round(a.x + (b.x - a.x) * t), y = Math.round(a.y + (b.y - a.y) * t); if (s % 3 !== 2) ctx.fillRect(x - 1, y - 1, 3, 3); } };
-  ctx.fillStyle = "#c9a86b";
-  spur(LOCS.at(0), LOCS.at(5)); spur(LOCS.at(4), LOCS.at(6));
+  // one trail, switching banks of the river at each stop, in the suggested order
+  const order = ["foundations", "scope", "crosswalk", "conmon", "vdr", "ver", "twentyx"].map(id => LOCS.find(l => l.id === id));
   for (let i = 0; i < order.length - 1; i++) {
     const a = order.at(i), b = order.at(i + 1);
     const steps = 60;
