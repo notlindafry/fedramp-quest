@@ -750,7 +750,7 @@ function chooseLevel(l) {
   add("Day Shift: primer and scenario" + (day != null && state.cleared[l.id] ? ` (best ${day}/15)` : ""), () => playModule(MODULES[l.id]));
   add("Night Shift: harder scenario" + (nite != null && state.cleared[l.id + "_n"] ? ` (best ${nite}/15)` : ""), () => playModule(MODULES[l.id + "_n"]));
   add("Back to map", () => {});
-  list.appendChild(el("p", { class: "small" }, state.cleared[l.id] ? "Night Shift has no primer. Review the recap card in the Codex if you need it." : "Night Shift is easier after Day Shift, since it has no primer."));
+  list.appendChild(el("p", { class: "small" }, state.cleared[l.id] ? "Night Shift opens with a short briefing on new rules, then harder calls." : "Night Shift builds on Day Shift. Its briefing covers only the new rules."));
   openOv("menuOv");
 }
 
@@ -797,7 +797,26 @@ async function say(line, canBack) {
   return res;
 }
 
+/* Long lines overflow the dialog box on a phone, so split them at sentence
+   boundaries into pages of about MAX_PAGE characters. A single long sentence
+   stays whole and scrolls inside the box. */
+const MAX_PAGE = 140;
+function paginate(line) {
+  const t = String(line.text || "");
+  if (t.length <= MAX_PAGE) return [line];
+  const sentences = t.match(/[^.!?]+[.!?]+['")]*\s*|[^.!?]+$/g) || [t];
+  const pages = [];
+  let cur = "";
+  for (const sen of sentences) {
+    if (cur && (cur + sen).trim().length > MAX_PAGE) { pages.push(cur.trim()); cur = ""; }
+    cur += sen;
+  }
+  if (cur.trim()) pages.push(cur.trim());
+  return pages.map(text => ({ ...line, text }));
+}
+
 async function runLines(lines, opts = {}) {
+  lines = lines.flatMap(paginate);
   let i = 0;
   while (i < lines.length) {
     const res = await say(lines.at(i), !!opts.back && i > 0);
